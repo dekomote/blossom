@@ -1,8 +1,8 @@
 import QtQuick 2.0
 
 Rectangle {
-    width: 32
-    height: 32
+    width: 48
+    height: 48
     id: outer_wrapper
     property int row: 0
     property int column: 0
@@ -11,7 +11,8 @@ Rectangle {
     signal close()
 
     onOpen: {
-        bg.open()
+        bg.open();
+        closeTimer.start();
     }
 
     onClose: {
@@ -27,6 +28,14 @@ Rectangle {
         property string st3: 'images/3.png'
         property string st_end: bg.st3
         source: st1
+
+        Timer {
+            id: closeTimer;
+            interval: 300;
+            running: false;
+            repeat: false;
+            onTriggered: parent.close();
+        }
 
         MouseArea {
               id: mouseArea

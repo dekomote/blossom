@@ -5,7 +5,7 @@ Rectangle {
 
     width: 360
     height: 360
-    property int cell_size: 32
+    property int cell_size: 48
 
 
     Grid {
@@ -16,18 +16,22 @@ Rectangle {
         spacing: 0
         objectName: "flowerGrid"
         id: flowerGrid
-        signal grabbed(var openedFlowers);
+        signal grabbed(var openedFlowers, var closedFlowers);
 
         Connections {
             target: flowerHandler
             onUpdateGrid: {
-                flowerGrid.grabbed(openedFlowers)
+                flowerGrid.grabbed(openedFlowers, closedFlowers)
             }
           }
 
         onGrabbed: {
+//            for(var j = 0; j < closedFlowers.length; j+=2){
+//                flowerRepeater.itemAt(flowerGrid.columns*closedFlowers[j] + closedFlowers[j+1]*1).close();
+//            }
+
             for(var j = 0; j < openedFlowers.length; j+=2){
-                flowerRepeater.itemAt(flowerGrid.columns*openedFlowers[j] + openedFlowers[j+1]*1).open()
+                flowerRepeater.itemAt(flowerGrid.columns*openedFlowers[j] + openedFlowers[j+1]*1).open();
             }
         }
 

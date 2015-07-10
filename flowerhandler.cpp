@@ -6,42 +6,75 @@
 using namespace cv;
 using namespace std;
 
+WorkerThread::WorkerThread(VideoCapture * capture)
+{
+    cap = capture;
+}
+
+void WorkerThread::run()
+{
+    Mat frame;
+
+    if(cap->isOpened()) {
+        cap->release();
+    }
+    else {
+        cap->open(0);
+    }
+
+    if(!cap->isOpened())
+        return;
+
+    BackgroundSubtractorMOG2* fgbg = new BackgroundSubtractorMOG2();
+    Mat kernel = getStructuringElement(MORPH_ELLIPSE, Point(3,3));
+    Mat fore;
+    QList<int> openedFlowers;
+    QList<int> closedFlowers;
+
+
+    for(;;){
+        openedFlowers.clear();
+        closedFlowers.clear();
+        cap->read(frame);
+        fgbg->operator ()(frame, fore);
+        morphologyEx(fore, fore, MORPH_OPEN, kernel);
+        imshow("Foreground", fore);
+        resize(fore, fore, Size(columns, rows), INTER_NEAREST);
+        for(int i=0; i<columns; i++){
+            for(int j=0; j<rows; j++){
+                if(fore.at<uchar>(Point(i, j)) > 127)
+                    openedFlowers << j << i;
+                else
+                    closedFlowers << j << i;
+            }
+        }
+        frameComplete(openedFlowers, closedFlowers);
+        //QThread::sleep(100);
+    }
+}
+
 
 FlowerHandler::FlowerHandler(QObject *parent) :
     QObject(parent)
 {
-    frameBuffer = NULL;
+    cap = new VideoCapture(0);
+    worker = new WorkerThread(cap);
+    columns = 0;
+    rows = 0;
 }
 
 
-void FlowerHandler::gridCompleted(int rows, int columns)
+void FlowerHandler::gridCompleted(int rws, int cls)
 {
-    if(cap.isOpened()) {
-        cap.release();
-    }
-    else {
-        cap.open(0);
-    }
+    rows = rws;
+    columns = cls;
 
-    if(!cap.isOpened())
-        return;
-
-    for(;;) {
-        cap.read(frame);
-//        BackgroundSubtractorMOG2 fgbg;
-//        Mat fore;
-//        Mat back;
-
-//        fgbg.operator ()(frame, fore);
-//        fgbg.getBackgroundImage(back);
-
-//        erode(fore, fore, Mat());
-//        dilate(fore, fore, Mat());
-
-        imshow("Frame", frame);
-//        imshow("Foreground", fore);
-//        imshow("Background", back);
-    }
+    if(worker->isRunning())
+        worker->terminate();
+    connect(worker, SIGNAL(frameComplete(QList<int>, QList<int>)), this, SLOT(sendGrid(QList<int>, QList<int>)));
+    worker->rows = rows;
+    worker->columns = columns;
+    worker->start();
 
 //    QList<int> openedFlowers;
 //    QRgb mask = (255, 255, 255);
@@ -58,4 +91,9 @@ void FlowerHandler::gridCompleted(int rows, int columns)
 //    }
 
 //    updateGrid(openedFlowers);
+}
+
+void FlowerHandler::sendGrid(QList<int> openedFlowers, QList<int> closedFlowers)
+{
+    updateGrid(openedFlowers, closedFlowers);
 }

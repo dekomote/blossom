@@ -23,6 +23,6 @@ OTHER_FILES += \
 HEADERS += \
     flowerhandler.h
 
-INCLUDEPATH += /usr/include/opencv2/
+INCLUDEPATH += /opt/opencv/include/opencv2/
 
 LIBS += -lopencv_core -lopencv_highgui -lopencv_video -lopencv_imgproc
