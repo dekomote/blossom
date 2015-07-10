@@ -5,7 +5,7 @@ Rectangle {
 
     width: 360
     height: 360
-    property int cell_size: 48
+    property int cell_size: 32
 
 
     Grid {
@@ -26,10 +26,6 @@ Rectangle {
           }
 
         onGrabbed: {
-//            for(var j = 0; j < closedFlowers.length; j+=2){
-//                flowerRepeater.itemAt(flowerGrid.columns*closedFlowers[j] + closedFlowers[j+1]*1).close();
-//            }
-
             for(var j = 0; j < openedFlowers.length; j+=2){
                 flowerRepeater.itemAt(flowerGrid.columns*openedFlowers[j] + openedFlowers[j+1]*1).open();
             }

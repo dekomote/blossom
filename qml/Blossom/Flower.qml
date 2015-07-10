@@ -1,8 +1,8 @@
 import QtQuick 2.0
 
 Rectangle {
-    width: 48
-    height: 48
+    width: 32
+    height: 32
     id: outer_wrapper
     property int row: 0
     property int column: 0
@@ -31,7 +31,7 @@ Rectangle {
 
         Timer {
             id: closeTimer;
-            interval: 300;
+            interval: 400;
             running: false;
             repeat: false;
             onTriggered: parent.close();
