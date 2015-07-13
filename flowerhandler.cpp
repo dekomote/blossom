@@ -25,9 +25,11 @@ void WorkerThread::run()
     if(!cap->isOpened())
         return;
 
-    BackgroundSubtractorMOG* fgbg = new BackgroundSubtractorMOG(500, 3, 0.4, 0);
-    Mat kernel = getStructuringElement(MORPH_ELLIPSE, Point(3,3));
+	BackgroundSubtractorMOG2* fgbg = new BackgroundSubtractorMOG2(50000, 30, false);
     Mat fore;
+	Mat person;
+	cap->read(fore);
+	cvtColor(fore, fore, CV_RGB2GRAY);
     QList<int> openedFlowers;
     QList<int> closedFlowers;
 
@@ -36,19 +38,22 @@ void WorkerThread::run()
         openedFlowers.clear();
         closedFlowers.clear();
         cap->read(frame);
-        fgbg->operator ()(frame, fore);
-        morphologyEx(fore, fore, MORPH_CLOSE, kernel);
-        imshow("Foreground", fore);
-        resize(fore, fore, Size(columns, rows), INTER_NEAREST);
-        for(int i=0; i<columns; i++){
-            for(int j=0; j<rows; j++){
-                if(fore.at<uchar>(Point(i, j)) >= 127)
-                    openedFlowers << j << i;
-                else
-                    closedFlowers << j << i;
-            }
-        }
-        frameComplete(openedFlowers, closedFlowers);
+		cvtColor(frame, frame, CV_RGB2GRAY);
+		absdiff(frame, fore, person );
+		threshold(person, person, 30, 255, THRESH_BINARY);
+		//fgbg->operator ()(frame, fore);
+		//morphologyEx(fore, fore, MORPH_CLOSE, kernel);
+		imshow("Foreground", person);
+		resize(person, person, Size(columns, rows), INTER_NEAREST);
+		for(int i=0; i<columns; i++){
+			for(int j=0; j<rows; j++){
+				if(person.at<uchar>(Point(i, j)) >= 127)
+					openedFlowers << j << i;
+				else
+					closedFlowers << j << i;
+			}
+		}
+		frameComplete(openedFlowers, closedFlowers);
     }
 }
 

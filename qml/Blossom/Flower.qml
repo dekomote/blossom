@@ -31,7 +31,7 @@ Rectangle {
 
         Timer {
             id: closeTimer;
-            interval: 400;
+            interval: 500;
             running: false;
             repeat: false;
             onTriggered: parent.close();
