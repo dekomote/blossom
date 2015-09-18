@@ -6,32 +6,45 @@ Rectangle {
     id: outer_wrapper
     property int row: 0
     property int column: 0
+    property string new_st1;
+    property string new_st2;
+    property string new_st3;
+    property var st1_all: ['images/1_1.png', 'images/1_2.png', 'images/1_3.png', 'images/1_4.png' ,'images/1_5.png']
+    property var st2_all: ['images/2_1.png', 'images/2_2.png', 'images/2_3.png', 'images/2_4.png' ,'images/2_5.png']
+    property var st3_all: ['images/3_1.png', 'images/3_2.png', 'images/3_3.png', 'images/3_4.png' ,'images/3_5.png']
 
     signal open()
     signal close()
+    signal changeBg()
 
     onOpen: {
         bg.open();
-        closeTimer.start();
+        //closeTimer.start();
     }
 
     onClose: {
         bg.close()
     }
 
+    onChangeBg: {
+        bg.st1 = new_st1;
+        bg.st2 = new_st2;
+        bg.st3 = new_st3;
+    }
+
     Image {
         width: parent.width
         height: parent.height
         id: bg
-        property string st1: 'images/1.png'
-        property string st2: 'images/2.png'
-        property string st3: 'images/3.png'
+        property string st1: 'images/1_1.png'
+        property string st2: 'images/2_2.png'
+        property string st3: 'images/3_5.png'
         property string st_end: bg.st3
         source: st1
 
         Timer {
             id: closeTimer;
-            interval: 500;
+            interval: 1000;
             running: false;
             repeat: false;
             onTriggered: parent.close();
@@ -45,17 +58,17 @@ Rectangle {
           }
 
         function open() {
-            if(st_end == bg.st3) {
+            //if(st_end == bg.st3) {
                 openBlossom.start()
                 st_end = bg.st1
-            }
+            //}
         }
 
         function close() {
-            if(st_end == bg.st1) {
+            //if(st_end == bg.st1) {
                 closeBlossom.start()
                 st_end = bg.st3
-            }
+            //}
         }
 
         SequentialAnimation {

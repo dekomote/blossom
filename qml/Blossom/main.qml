@@ -15,7 +15,10 @@ Rectangle {
         columns: parent.width/parent.cell_size
         spacing: 0
         objectName: "flowerGrid"
-        id: flowerGrid
+        id: flowerGrid;
+        property bool mutex: false;
+        property var flowersToOpen: [];
+        property var previousFlowers: [];
         signal grabbed(var openedFlowers, var closedFlowers);
 
         Connections {
@@ -25,10 +28,49 @@ Rectangle {
             }
           }
 
-        onGrabbed: {
-            for(var j = 0; j < openedFlowers.length; j+=2){
-                flowerRepeater.itemAt(flowerGrid.columns*openedFlowers[j] + openedFlowers[j+1]*1).open();
+        Timer {
+            id: transitTimer;
+            interval: 10000;
+            running: true;
+            repeat: true;
+            onTriggered: {
+                var now = new Date().getTime();
+                //parent.st1 = parent.st1_all[(now/10) % 5];
+
+                for(var j = 0; j < (parent.rows * parent.columns); j++){
+                    flowerRepeater.itemAt(j).new_st1 = flowerRepeater.itemAt(j).st1_all[now % 5]
+                    flowerRepeater.itemAt(j).new_st2 = flowerRepeater.itemAt(j).st2_all[now % 5]
+                    flowerRepeater.itemAt(j).new_st3 = flowerRepeater.itemAt(j).st3_all[now % 5]
+                    flowerRepeater.itemAt(j).changeBg()
+                }
+
             }
+        }
+
+        onGrabbed: {
+            if(!flowerGrid.mutex){
+                flowerGrid.mutex = true
+                for(var j = 0; j < openedFlowers.length; j+=2){
+                    flowersToOpen.push(flowerGrid.columns*openedFlowers[j] + openedFlowers[j+1]*1)
+                    //previousFlowers.push([flowerGrid.columns*openedFlowers[j], openedFlowers[j+1]*1]);
+                }
+
+                previousFlowers.forEach(function(element, index, array){
+                    if(flowersToOpen.indexOf(element) < 0) {
+                        flowerRepeater.itemAt(element).close();
+                    }
+                })
+                previousFlowers = [];
+
+                flowersToOpen.forEach(function(element, index, array) {
+                    flowerRepeater.itemAt(element).open();
+                    previousFlowers.push(element);
+                });
+
+                flowersToOpen = [];
+                flowerGrid.mutex = false;
+           }
+
         }
 
         Repeater {

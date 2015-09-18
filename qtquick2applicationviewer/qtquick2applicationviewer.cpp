@@ -55,6 +55,7 @@ QtQuick2ApplicationViewer::QtQuick2ApplicationViewer(QWindow *parent)
 {
     connect(engine(), SIGNAL(quit()), SLOT(close()));
     setResizeMode(QQuickView::SizeRootObjectToView);
+    setFlags(Qt::FramelessWindowHint);
 }
 
 QtQuick2ApplicationViewer::~QtQuick2ApplicationViewer()
@@ -79,9 +80,5 @@ void QtQuick2ApplicationViewer::addImportPath(const QString &path)
 
 void QtQuick2ApplicationViewer::showExpanded()
 {
-#if defined(Q_WS_SIMULATOR) || defined(Q_OS_QNX)
     showFullScreen();
-#else
-    show();
-#endif
 }

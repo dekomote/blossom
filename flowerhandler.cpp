@@ -28,7 +28,8 @@ void WorkerThread::run()
 	BackgroundSubtractorMOG2* fgbg = new BackgroundSubtractorMOG2(50000, 30, false);
     Mat fore;
 	Mat person;
-	cap->read(fore);
+    for(int k=0;k<15;k++)
+        cap->read(fore);
 	cvtColor(fore, fore, CV_RGB2GRAY);
     QList<int> openedFlowers;
     QList<int> closedFlowers;
@@ -43,7 +44,7 @@ void WorkerThread::run()
 		threshold(person, person, 30, 255, THRESH_BINARY);
 		//fgbg->operator ()(frame, fore);
 		//morphologyEx(fore, fore, MORPH_CLOSE, kernel);
-		imshow("Foreground", person);
+        //imshow("Foreground", person);
 		resize(person, person, Size(columns, rows), INTER_NEAREST);
 		for(int i=0; i<columns; i++){
 			for(int j=0; j<rows; j++){
