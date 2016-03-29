@@ -19,7 +19,7 @@ void WorkerThread::run()
         cap->release();
     }
     else {
-        cap->open(0);
+		cap->open(0);
     }
 
     if(!cap->isOpened())
@@ -28,7 +28,7 @@ void WorkerThread::run()
 	BackgroundSubtractorMOG2* fgbg = new BackgroundSubtractorMOG2(50000, 30, false);
     Mat fore;
 	Mat person;
-    for(int k=0;k<15;k++)
+	for(int k=0;k<30;k++)
         cap->read(fore);
 	cvtColor(fore, fore, CV_RGB2GRAY);
     QList<int> openedFlowers;
@@ -40,11 +40,12 @@ void WorkerThread::run()
         closedFlowers.clear();
         cap->read(frame);
 		cvtColor(frame, frame, CV_RGB2GRAY);
+		imshow("Pre-processed", frame);
 		absdiff(frame, fore, person );
-		threshold(person, person, 30, 255, THRESH_BINARY);
+		threshold(person, person, 80, 255, THRESH_BINARY);
 		//fgbg->operator ()(frame, fore);
 		//morphologyEx(fore, fore, MORPH_CLOSE, kernel);
-        //imshow("Foreground", person);
+		//imshow("Foreground", person);
 		resize(person, person, Size(columns, rows), INTER_NEAREST);
 		for(int i=0; i<columns; i++){
 			for(int j=0; j<rows; j++){

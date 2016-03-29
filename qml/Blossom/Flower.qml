@@ -59,15 +59,17 @@ Rectangle {
 
         function open() {
             //if(st_end == bg.st3) {
-                openBlossom.start()
-                st_end = bg.st1
+                //openBlossom.start()
+            bg.source = bg.st3;
+                //st_end = bg.st1
             //}
         }
 
         function close() {
             //if(st_end == bg.st1) {
-                closeBlossom.start()
-                st_end = bg.st3
+                //closeBlossom.start()
+            bg.source=bg.st1;
+                //st_end = bg.st3
             //}
         }
 
